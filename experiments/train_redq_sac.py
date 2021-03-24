@@ -156,9 +156,12 @@ if __name__ == '__main__':
     parser.add_argument('--debug', action='store_true')
     args = parser.parse_args()
 
+    # modify the code here if you want to use a different naming scheme
+    exp_name_full = args.exp_name + '_%s' % args.env
+
     # specify experiment name, seed and data_dir.
     # for example, for seed 0, the progress.txt will be saved under data_dir/exp_name/exp_name_s0
-    logger_kwargs = setup_logger_kwargs(args.exp_name, args.seed, args.data_dir)
+    logger_kwargs = setup_logger_kwargs(exp_name_full, args.seed, args.data_dir)
 
     redq_sac(args.env, seed=args.seed, epochs=args.epochs,
              logger_kwargs=logger_kwargs, debug=args.debug)

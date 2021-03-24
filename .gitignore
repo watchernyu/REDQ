@@ -2,6 +2,9 @@
 data/
 extra-python-libs/
 
+# ignore experiment files that are not useful to track
+hpc_experiments/
+
 .idea/
 
 # Byte-compiled / optimized / DLL files
