@@ -5,6 +5,8 @@ Mar 23, 2021: We have reorganized the code to make it cleaner and more readable 
 
 Mar 29, 2021: We tested the installation process and run the code, and everything seems to be working correctly. We are now working on the implementation video tutorial, which will be released soon. 
 
+May 3, 2021: We uploaded a video tutorial (shared via google drive), please see link below. Hope it helps! 
+
 Code for REDQ-OFE is still being cleaned up and will be released soon (essentially the same code but with additional input from a OFENet). 
 
 ## Code structure explained
