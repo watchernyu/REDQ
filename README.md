@@ -20,10 +20,10 @@ In `redq/algos/core.py` we provide code for some basic classes (Q network, polic
 
 In `redq/utils` there are some utility classes (such as a logger) and helper functions that mostly have nothing to do with REDQ's core components. 
 
-## Implementation tutorial
+## Implementation video tutorial
 Here is the link to a video tutorial we created that explains the REDQ implementation in detail: 
 
-[REDQ code explained](https://drive.google.com/file/d/1ZUuDK6KUqAGJFaqsM5ITZ_ZyRvThaRn_/view?usp=sharing)
+[REDQ code explained video tutorial (Google Drive Link)](https://drive.google.com/file/d/1ZUuDK6KUqAGJFaqsM5ITZ_ZyRvThaRn_/view?usp=sharing)
 
 ## Environment setup
 Note: you don't need to exactly follow the tutorial here if you know well about how to install python packages. 
