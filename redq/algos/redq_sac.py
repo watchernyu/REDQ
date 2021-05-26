@@ -45,7 +45,6 @@ class REDQSACAgent(object):
             new_q_target_net.load_state_dict(new_q_net.state_dict())
             self.q_target_net_list.append(new_q_target_net)
         # set up optimizers
-        policy_optimizer = optim.Adam(self.policy_net.parameters(), lr=lr)
         self.policy_optimizer = optim.Adam(self.policy_net.parameters(), lr=lr)
         self.q_optimizer_list = []
         for q_i in range(num_Q):
@@ -188,6 +187,10 @@ class REDQSACAgent(object):
             y_q = y_q.expand((-1, self.num_Q)) if y_q.shape[1] == 1 else y_q
             q_loss_all = self.mse_criterion(q_prediction_cat, y_q) * self.num_Q
 
+            for q_i in range(self.num_Q):
+                self.q_optimizer_list[q_i].zero_grad()
+            q_loss_all.backward()
+
             """policy and alpha loss"""
             if ((i_update + 1) % self.policy_update_delay == 0) or i_update == num_update - 1:
                 # get policy loss
@@ -199,6 +202,8 @@ class REDQSACAgent(object):
                 q_a_tilda_cat = torch.cat(q_a_tilda_list, 1)
                 ave_q = torch.mean(q_a_tilda_cat, dim=1, keepdim=True)
                 policy_loss = (self.alpha * log_prob_a_tilda - ave_q).mean()
+                self.policy_optimizer.zero_grad()
+                policy_loss.backward()
 
                 # get alpha loss
                 if self.auto_alpha:
@@ -212,14 +217,9 @@ class REDQSACAgent(object):
 
             """update networks"""
             for q_i in range(self.num_Q):
-                self.q_optimizer_list[q_i].zero_grad()
-            q_loss_all.backward()
-            for q_i in range(self.num_Q):
                 self.q_optimizer_list[q_i].step()
 
             if ((i_update + 1) % self.policy_update_delay == 0) or i_update == num_update - 1:
-                self.policy_optimizer.zero_grad()
-                policy_loss.backward()
                 self.policy_optimizer.step()
 
             # polyak averaged Q target networks
