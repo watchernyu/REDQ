@@ -197,6 +197,7 @@ class REDQSACAgent(object):
                 a_tilda, mean_a_tilda, log_std_a_tilda, log_prob_a_tilda, _, pretanh = self.policy_net.forward(obs_tensor)
                 q_a_tilda_list = []
                 for sample_idx in range(self.num_Q):
+                    self.q_net_list[sample_idx].requires_grad_(False)
                     q_a_tilda = self.q_net_list[sample_idx](torch.cat([obs_tensor, a_tilda], 1))
                     q_a_tilda_list.append(q_a_tilda)
                 q_a_tilda_cat = torch.cat(q_a_tilda_list, 1)
@@ -204,6 +205,8 @@ class REDQSACAgent(object):
                 policy_loss = (self.alpha * log_prob_a_tilda - ave_q).mean()
                 self.policy_optimizer.zero_grad()
                 policy_loss.backward()
+                for sample_idx in range(self.num_Q):
+                    self.q_net_list[sample_idx].requires_grad_(True)
 
                 # get alpha loss
                 if self.auto_alpha:
