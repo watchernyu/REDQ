@@ -25,6 +25,16 @@ Here is the link to a video tutorial we created that explains the REDQ implement
 
 [REDQ code explained video tutorial (Google Drive Link)](https://drive.google.com/file/d/1ZUuDK6KUqAGJFaqsM5ITZ_ZyRvThaRn_/view?usp=sharing)
 
+## Data and reproducing figures in REDQ
+The data used in the REDQ paper can be downloaded here: 
+[REDQ DATA download link](https://drive.google.com/file/d/1mpdb2OXxEembO83hiAXfN8DYeSy6Gl1o/view?usp=sharing) (Google Drive Link, ~80 MB)
+
+To reproduce the figures, first download the data, and then extract the zip file to `REDQ/data`. So now a folder called `REDQ_ICLR21` should be at this path:  `REDQ/data/REDQ_ICLR21`. 
+
+Then you can go into the `plot_utils` folder, and run the `plot_REDQ.py` program there. You will need `seaborn==0.8.1` to run it correctly. We might update the code later so that it works for newer versions but currently seaborn newer than 0.8.1 is not supported. If you don't want to mess up existing conda or python virtual environments, you can create a new environment and simply install seaborn 0.8.1 there and use it to run the program. 
+
+If you encounter any problem or cannot access the data (can't use google or can't download), please open an issue to let us know! Thanks! 
+
 ## Environment setup
 Note: you don't need to exactly follow the tutorial here if you know well about how to install python packages. 
 
