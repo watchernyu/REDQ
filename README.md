@@ -18,6 +18,8 @@ In `redq/algos/redq_sac.py` we provide code for the `REDQSACAgent` class. If you
 
 In `redq/algos/core.py` we provide code for some basic classes (Q network, policy network, replay buffer) and some helper functions. These classes and functions are used by the REDQ agent class. 
 
+In `redq/utils` there are some utility classes (such as a logger) and helper functions that largely have nothing to do with REDQ's core components. In `redq/utils/bias_utils.py` you can find utility functions to get bias estimation (bias estimate is computed roughly as: Monte Carlo return - current Q estimate). In `experiments/train_redq_sac.py` you can decide whether you want bias evaluation when running the experiment by setting the `evaluate_bias` flag (this will lead to some minor computation overhead). 
+
 In `plot_utils` there are some utility functions to reproduce the figures we presented in the paper. (See the section on "Data and reproducing figures in REDQ")
 
 ## Implementation video tutorial
