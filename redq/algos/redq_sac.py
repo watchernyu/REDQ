@@ -112,6 +112,25 @@ class REDQSACAgent(object):
             action = action_tensor.cpu().numpy().reshape(-1)
         return action
 
+    def get_action_and_logprob_for_bias_evaluation(self, obs): #TODO modify the readme here
+        # given an observation, output a sampled action in numpy form
+        with torch.no_grad():
+            obs_tensor = torch.Tensor(obs).unsqueeze(0).to(self.device)
+            action_tensor, _, _, log_prob_a_tilda, _, _, = self.policy_net.forward(obs_tensor, deterministic=False,
+                                         return_log_prob=True)
+            action = action_tensor.cpu().numpy().reshape(-1)
+        return action, log_prob_a_tilda
+
+    def get_ave_q_prediction_for_bias_evaluation(self, obs_tensor, acts_tensor):
+        # given obs_tensor and act_tensor, output Q prediction
+        q_prediction_list = []
+        for q_i in range(self.num_Q):
+            q_prediction = self.q_net_list[q_i](torch.cat([obs_tensor, acts_tensor], 1))
+            q_prediction_list.append(q_prediction)
+        q_prediction_cat = torch.cat(q_prediction_list, dim=1)
+        average_q_prediction = torch.mean(q_prediction_cat, dim=1)
+        return average_q_prediction
+
     def store_data(self, o, a, r, o2, d):
         # store one transition to the buffer
         self.replay_buffer.store(o, a, r, o2, d)
