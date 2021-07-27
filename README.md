@@ -18,7 +18,7 @@ In `redq/algos/redq_sac.py` we provide code for the `REDQSACAgent` class. If you
 
 In `redq/algos/core.py` we provide code for some basic classes (Q network, policy network, replay buffer) and some helper functions. These classes and functions are used by the REDQ agent class. 
 
-In `redq/utils` there are some utility classes (such as a logger) and helper functions that mostly have nothing to do with REDQ's core components. 
+In `plot_utils` there are some utility functions to reproduce the figures we presented in the paper. (See the section on "Data and reproducing figures in REDQ")
 
 ## Implementation video tutorial
 Here is the link to a video tutorial we created that explains the REDQ implementation in detail: 
