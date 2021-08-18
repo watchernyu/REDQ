@@ -128,6 +128,7 @@ def redq_sac(env_name, seed=0, epochs='mbpo', steps_per_epoch=1000,
         # Ignore the "done" signal if it comes from hitting the time
         # horizon (that is, when it's an artificial terminal signal
         # that isn't based on the agent's state)
+        ep_len += 1
         d = False if ep_len == max_ep_len else d
 
         # give new data to agent
@@ -137,7 +138,7 @@ def redq_sac(env_name, seed=0, epochs='mbpo', steps_per_epoch=1000,
         # set obs to next obs
         o = o2
         ep_ret += r
-        ep_len += 1
+
 
         if d or (ep_len == max_ep_len):
             # store episode return and length to logger
