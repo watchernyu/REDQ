@@ -8,6 +8,7 @@ from redq.algos.core import mbpo_epoches, test_agent
 from redq.utils.run_utils import setup_logger_kwargs
 from redq.utils.bias_utils import log_bias_evaluation
 from redq.utils.logx import EpochLogger
+
 def redq_sac(env_name, seed=0, epochs='mbpo', steps_per_epoch=1000,
              max_ep_len=1000, n_evals_per_epoch=1,
              logger_kwargs=dict(), debug=False,
@@ -55,21 +56,25 @@ def redq_sac(env_name, seed=0, epochs='mbpo', steps_per_epoch=1000,
         max_ep_len = 100
         start_steps = 100
         steps_per_epoch = 100
+
     # use gpu if available
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     # set number of epoch
     if epochs == 'mbpo' or epochs < 0:
         epochs = mbpo_epoches[env_name]
     total_steps = steps_per_epoch * epochs + 1
+
     """set up logger"""
     logger = EpochLogger(**logger_kwargs)
     logger.save_config(locals())
+
     """set up environment and seeding"""
     env_fn = lambda: gym.make(args.env)
     env, test_env, bias_eval_env = env_fn(), env_fn(), env_fn()
     # seed torch and numpy
     torch.manual_seed(seed)
     np.random.seed(seed)
+
     # seed environment along with env action space so that everything is properly seeded for reproducibility
     def seed_all(epoch):
         seed_shift = epoch * 9999
@@ -85,7 +90,8 @@ def redq_sac(env_name, seed=0, epochs='mbpo', steps_per_epoch=1000,
         test_env.action_space.np_random.seed(test_env_seed)
         bias_eval_env.seed(bias_eval_env_seed)
         bias_eval_env.action_space.np_random.seed(bias_eval_env_seed)
-    seed_all(0)
+    seed_all(epoch=0)
+
     """prepare to init agent"""
     # get obs and action dimensions
     obs_dim = env.observation_space.shape[0]
@@ -100,6 +106,7 @@ def redq_sac(env_name, seed=0, epochs='mbpo', steps_per_epoch=1000,
     # flush logger (optional)
     sys.stdout.flush()
     #################################################################################################
+
     """init agent and start training"""
     agent = REDQSACAgent(env_name, obs_dim, act_dim, act_limit, device,
                  hidden_sizes, replay_size, batch_size,
@@ -108,12 +115,21 @@ def redq_sac(env_name, seed=0, epochs='mbpo', steps_per_epoch=1000,
                  start_steps, delay_update_steps,
                  utd_ratio, num_Q, num_min, q_target_mode,
                  policy_update_delay)
+
     o, r, d, ep_ret, ep_len = env.reset(), 0, False, 0, 0
+
     for t in range(total_steps):
         # get action from agent
         a = agent.get_exploration_action(o, env)
         # Step the env, get next observation, reward and done signal
         o2, r, d, _ = env.step(a)
+
+        # Very important: before we let agent store this transition,
+        # Ignore the "done" signal if it comes from hitting the time
+        # horizon (that is, when it's an artificial terminal signal
+        # that isn't based on the agent's state)
+        d = False if ep_len == max_ep_len else d
+
         # give new data to agent
         agent.store_data(o, a, r, o2, d)
         # let agent update
@@ -122,10 +138,7 @@ def redq_sac(env_name, seed=0, epochs='mbpo', steps_per_epoch=1000,
         o = o2
         ep_ret += r
         ep_len += 1
-        # Ignore the "done" signal if it comes from hitting the time
-        # horizon (that is, when it's an artificial terminal signal
-        # that isn't based on the agent's state)
-        d = False if ep_len == max_ep_len else d
+
         if d or (ep_len == max_ep_len):
             # store episode return and length to logger
             logger.store(EpRet=ep_ret, EpLen=ep_len)
@@ -135,10 +148,12 @@ def redq_sac(env_name, seed=0, epochs='mbpo', steps_per_epoch=1000,
         # End of epoch wrap-up
         if (t+1) % steps_per_epoch == 0:
             epoch = t // steps_per_epoch
+
             # Test the performance of the deterministic version of the agent.
             test_agent(agent, test_env, max_ep_len, logger) # add logging here
             if evaluate_bias:
                 log_bias_evaluation(bias_eval_env, agent, logger, max_ep_len, alpha, gamma, n_mc_eval, n_mc_cutoff)
+
             # reseed should improve reproducibility (should make results the same whether bias evaluation is on or not)
             if reseed_each_epoch:
                 seed_all(epoch)
@@ -159,6 +174,7 @@ def redq_sac(env_name, seed=0, epochs='mbpo', steps_per_epoch=1000,
             logger.log_tabular('Alpha', with_min_and_max=True)
             logger.log_tabular('LossAlpha', average_only=True)
             logger.log_tabular('PreTanh', with_min_and_max=True)
+
             if evaluate_bias:
                 logger.log_tabular("MCDisRet", with_min_and_max=True)
                 logger.log_tabular("MCDisRetEnt", with_min_and_max=True)
