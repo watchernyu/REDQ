@@ -1,6 +1,8 @@
 # REDQ source code
 Author's PyTorch implementation of Randomized Ensembled Double Q-Learning (REDQ) algorithm. Paper link: https://arxiv.org/abs/2101.05982
 
+Nov 14, 2021: **MuJoCo** is now free (thanks DeepMind!) and we now have a guide on setting up with MuJoCo 2.1 + OpenAI Gym + REDQ on a linux machine (see end of this page for newest setup guide). 
+
 Aug 18, 2021: **VERY IMPORTANT BUG FIX** in `experiments/train_redq_sac.py`, the done signal is not being correctly used, the done signal value should be `False` when the episode terminates due to environment timelimit, but in the earlier version of the code, 
 the agent puts the transition in buffer before this value is corrected. This can affect performance especially for environments where termination due to bad action is rare. This is now fixed and we might do some more testing. If you use this file to run experiments **please check immediately or pull the latest version** of the code. 
 Sorry for the bug! Please don't hesitate to open an issue if you have any questions.
@@ -43,7 +45,10 @@ Then you can go into the `plot_utils` folder, and run the `plot_REDQ.py` program
 
 If you encounter any problem or cannot access the data (can't use google or can't download), please open an issue to let us know! Thanks! 
 
-## Environment setup
+## Environment setup (old guide, for the newest guide, see end of this page) 
+
+**VERY IMPORTANT**: because MuJoCo is now free, the setup guide here is slightly outdated (this is the setup we used when we run our experiments for the REDQ paper), we now provide a newer updated setup guide that uses the newest MuJoCo, please see the end of the this page. 
+
 Note: you don't need to exactly follow the tutorial here if you know well about how to install python packages. 
 
 First create a conda environment and activate it:
@@ -102,6 +107,7 @@ If you intend to implement REDQ on your codebase, please refer to the paper and 
 
 For REDQ-OFE, as mentioned in the paper, for some reason adding PyTorch batch norm to OFENet will lead to divergence. So in the end we did not use batch norm in our code. 
 
+
 ## Reproduce the results
 If you use a different PyTorch version, it might still work, however, it might be better if your version is close to the ones we used. We have found that for example, on Ant environment, PyTorch 1.3 and 1.2 give quite different results. The reason is not entirely clear. 
 
@@ -114,3 +120,177 @@ Please open an issue if you find any problems in the code, thanks!
 ## Acknowledgement
 
 Our code for REDQ-SAC is partly based on the SAC implementation in OpenAI Spinup (https://github.com/openai/spinningup). The current code structure is inspired by the super clean TD3 source code by Scott Fujimoto (https://github.com/sfujim/TD3). 
+
+
+## Environment setup with newest MuJoCo 2.1, on a Ubuntu 18.04 local machine
+First download MuJoCo files, on a linux machine, we put them under ~/.mujoco:
+```
+cd ~
+mkdir ~/.mujoco
+cd ~/.mujoco
+curl -O https://mujoco.org/download/mujoco210-linux-x86_64.tar.gz
+tar -xf mujoco210-linux-x86_64.tar.gz
+```
+
+Now we create a conda environment (you will need anaconda), and install pytorch (if you just want mujoco+gym and don't want pytorch, then skip this step)
+```
+conda create -y -n redq python=3.8
+conda activate redq
+conda install -y pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch
+```
+
+Now install mujoco_py: 
+```
+cd ~
+mkdir rl_course
+cd rl_course
+git clone https://github.com/openai/mujoco-py.git
+cd mujoco-py/
+pip install -e . --no-cache
+```
+A list of packages that need to be installed for linux is here https://github.com/openai/mujoco-py/blob/master/Dockerfile
+
+Now test by running python and then `import mujoco_py`, typically you will run into some error message, check that Dockerfile to see if you are missing any of the required packages (either python package or system package). 
+
+If mujoco works, then install REDQ: 
+
+```
+cd ~
+cd rl_course
+git clone https://github.com/watchernyu/REDQ.git
+cd REDQ/
+pip install -e .
+```
+
+Now test REDQ by running:
+```
+python experiments/train_redq_sac.py --debug
+```
+If you see training logs, then the environment should be setup correctly! 
+
+
+## Environment setup with newest MuJoCo 2.1, on the NYU Shanghai hpc cluster (system is Linux, hpc management is Slurm)
+This guide helps you set up MuJoCo and then OpenAI Gym, and then REDQ. (You can also follow the guide if you just want OpenAI Gym + MuJoCo and not REDQ, REDQ is only the last step). This likely also works for NYU NY hpc cluster, and might also works for hpc cluster in other schools, assuming your hpc is linux and is using Slurm. 
+
+### conda init
+First we need to login to the hpc. 
+```
+ssh netid@hpc.shanghai.nyu.edu
+```
+After this you should be on the login node of the hpc. Note the login node is different from a compute node, we will set up environment on the login node, then when we submit actual jobs, they are in fact run on the compute node. 
+
+Note that on the hpc, students typically don't have admin privileges (which means you cannot install things that require `sudo`), so for some of the required system packages, we will not use the typical `sudo apt install` command, instead, we will use `module avail` to check if they are available, and then use `module load` to load them. If on your hpc cluster, a system package is not there, check with your hpc admin and ask them to help you. 
+
+On the NYU Shanghai hpc (after you ssh, you get to the login node), first we want to set up conda correctly (typically need to do this for new accounts):
+```
+module load anaconda3
+conda init bash
+```
+Now use Ctrl + D to logout, and then login again.
+
+### set up MuJoCo
+
+Now we are again on the hpc login node simply run this to load all required packages:
+```
+module load anaconda3 cuda/11.3.1 glew/1.13  glfw/3.3 gcc/7.3 mesa/19.0.5 llvm/7.0.1
+```
+
+Now download MuJoCo files, on a linux machine, we put them under ~/.mujoco:
+```
+cd ~
+mkdir ~/.mujoco
+cd ~/.mujoco
+curl -O https://mujoco.org/download/mujoco210-linux-x86_64.tar.gz
+tar -xf mujoco210-linux-x86_64.tar.gz
+```
+
+### set up conda environment
+Then set up a conda virtualenv, and activate it (you can give it a different name, the env name does not matter)
+```
+conda create -y -n redq python=3.8
+conda activate redq
+```
+
+Install Pytorch (skip this step if you don't need pytorch)
+```
+conda install -y pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch
+```
+
+After you installed Pytorch, check if it works by running `python`, then `import torch` in the python interpreter. 
+If Pytorch works, then either run `quit()` or Ctrl + D to exit the python interpreter. 
+
+### set up `mujoco_py`
+
+The next is to install MuJoCo, let's first run these 
+```
+echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/.mujoco/mujoco210/bin' >> ~/.bashrc
+echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/nvidia' >> ~/.bashrc
+```
+(it might be easier to do this step here. However, you can also set this up later when you test `import mujoco_py`)
+
+Now we want the `.bashrc` file to take effect, we need to ctrl+D to logout, and then login again, after we logout and login, we need to reload all the modules , and then also activate the conda env again. (each time you login, the loaded modules and activated environment will be reset, but files on disk will persist) After you login to the hpc again:
+```
+module load anaconda3 cuda/11.3.1 glew/1.13  glfw/3.3 gcc/7.3 mesa/19.0.5 llvm/7.0.1
+conda activate redq
+```
+
+Now we can install `mujoco_py`. (You might want to know why do we need this? We already have the MuJoCo files, but they do not work directly with python, so `mujoco_py` is needed for us to use MuJoCo in python):
+```
+cd ~
+mkdir rl_course
+cd rl_course
+git clone https://github.com/openai/mujoco-py.git
+cd mujoco-py/
+pip install -e . --no-cache
+```
+
+Now we want to test whether it works, run `python`, and then in the python interpreter, run `import mujoco_py`. The first time you run it, it will give a ton of log, if you can run it again and get no log, then it should be working. (Summary: try run `import mujoco_py` twice, if the second time you do it, you get no log and no error message, then it should be working). After this testing is complete, quit the python interpreter with either `quit()` or Ctrl + D. 
+
+Note: if you got an error when import `mujoco_py`, sometimes the error will tell you to add some `export` text to a file (typically `~/.bashrc`) on your system, if you see that, then likely this is because you are installing on a system that configured things slightly differently from NYU Shanghai hpc cluster, in that case, just follow the error message to do whatever it tells you, then logout and login, and test it again. Check https://github.com/openai/mujoco-py for more info. 
+
+### set up gym
+
+Now we install OpenAI gym:
+`pip install gym`
+
+After this step, test gym by again run `python`, in the python interpreter, run:
+```
+import gym
+e = gym.make('Ant-v2')
+e.reset()
+```
+If you see a large numpy array (which is the initial state, or initial observation for the Ant-v2 environment), then gym is working. 
+
+### set up REDQ
+After this step, you can install REDQ. 
+```
+cd ~
+cd rl_course
+git clone https://github.com/watchernyu/REDQ.git
+cd REDQ/
+pip install -e .
+```
+
+### test on login node (sometimes things work on login but not on compute, we will first test login)
+```
+cd ~/rl_course/REDQ
+python experiments/train_redq_sac.py --debug
+```
+
+### test on compute node (will be updated soon)
+Now we test whether REDQ runs. We will first login to an interactive compute node (note a login node is not a compute node, don't do intensive computation on the login node.):
+```
+srun -p aquila --pty --mem  5000 -t 0-05:00 bash
+```
+And now don't forget we are in a new node and need to load modules and activate conda env:
+```
+module load anaconda3 cuda/11.3.1 glew/1.13  glfw/3.3 gcc/7.3 mesa/19.0.5 llvm/7.0.1
+conda deactivate
+conda activate redq 
+```
+Now test redq algorithm:
+```
+cd ~/rl_course/REDQ
+python experiments/train_redq_sac.py --debug
+```
+
