@@ -1,6 +1,22 @@
 # REDQ source code
 Author's PyTorch implementation of Randomized Ensembled Double Q-Learning (REDQ) algorithm. Paper link: https://arxiv.org/abs/2101.05982
 
+<a name="table-of-contents"/> 
+
+## Table of Contents  
+- [Table of contents](#table-of-contents)
+- [Code structure explained](#code-structure)  
+- [Implementation video tutorial](#video-tutorial)  
+- [Data and reproducing figures in REDQ](#reproduce-figures)  
+- [Environment setup (old guide)](#setup-old)  
+- [Train an REDQ agent](#train-redq)  
+- [Implement REDQ](#implement-redq)  
+- [Reproduce the results](#reproduce-results)  
+- [Environment setup MuJoCo 2.1, Ubuntu 18.04](#setup-ubuntu)  
+- [Environment setup MuJoCo 2.1, NYU Shanghai HPC](#setup-nyuhpc)  
+- [Acknowledgement](#acknowledgement)
+
+
 Nov 14, 2021: **MuJoCo** is now free (thanks DeepMind!) and we now have a guide on setting up with MuJoCo 2.1 + OpenAI Gym + REDQ on a linux machine (see end of this page for newest setup guide). 
 
 Aug 18, 2021: **VERY IMPORTANT BUG FIX** in `experiments/train_redq_sac.py`, the done signal is not being correctly used, the done signal value should be `False` when the episode terminates due to environment timelimit, but in the earlier version of the code, 
@@ -17,6 +33,8 @@ May 3, 2021: We uploaded a video tutorial (shared via google drive), please see 
 
 Code for REDQ-OFE is still being cleaned up and will be released soon (essentially the same code but with additional input from a OFENet). 
 
+<a name="code-structure"/> 
+
 ## Code structure explained
 The code structure is pretty simple and should be easy to follow. 
 
@@ -30,10 +48,14 @@ In `redq/utils` there are some utility classes (such as a logger) and helper fun
 
 In `plot_utils` there are some utility functions to reproduce the figures we presented in the paper. (See the section on "Data and reproducing figures in REDQ")
 
+<a name="video-tutorial"/> 
+
 ## Implementation video tutorial
 Here is the link to a video tutorial we created that explains the REDQ implementation in detail: 
 
 [REDQ code explained video tutorial (Google Drive Link)](https://drive.google.com/file/d/1ZUuDK6KUqAGJFaqsM5ITZ_ZyRvThaRn_/view?usp=sharing)
+
+<a name="reproduce-figures"/> 
 
 ## Data and reproducing figures in REDQ
 The data used in the REDQ paper can be downloaded here: 
@@ -44,6 +66,8 @@ To reproduce the figures, first download the data, and then extract the zip file
 Then you can go into the `plot_utils` folder, and run the `plot_REDQ.py` program there. You will need `seaborn==0.8.1` to run it correctly. We might update the code later so that it works for newer versions but currently seaborn newer than 0.8.1 is not supported. If you don't want to mess up existing conda or python virtual environments, you can create a new environment and simply install seaborn 0.8.1 there and use it to run the program. 
 
 If you encounter any problem or cannot access the data (can't use google or can't download), please open an issue to let us know! Thanks! 
+
+<a name="setup-old"/> 
 
 ## Environment setup (old guide, for the newest guide, see end of this page) 
 
@@ -95,6 +119,8 @@ cd REDQ
 pip install -e .
 ```
 
+<a name="train-redq"/> 
+
 ## Train an REDQ agent
 To train an REDQ agent, run:
 ```
@@ -102,11 +128,14 @@ python experiments/train_redq_sac.py
 ```
 On a 2080Ti GPU, running Hopper to 125K will approximately take 10-12 hours. Running Humanoid to 300K will approximately take 26 hours. 
 
+<a name="implement-redq"/> 
+
 ## Implement REDQ
 If you intend to implement REDQ on your codebase, please refer to the paper and the tutorial (to be released) for guidance. In particular, in Appendix B of the paper, we discussed hyperparameters and some additional implementation details. One important detail is in the beginning of the training, for the first 5000 data points, we sample random action from the action space and do not perform any updates. If you perform a large number of updates with a very small amount of data, it can lead to severe bias accumulation and can negatively affect the performance. 
 
 For REDQ-OFE, as mentioned in the paper, for some reason adding PyTorch batch norm to OFENet will lead to divergence. So in the end we did not use batch norm in our code. 
 
+<a name="reproduce-results"/> 
 
 ## Reproduce the results
 If you use a different PyTorch version, it might still work, however, it might be better if your version is close to the ones we used. We have found that for example, on Ant environment, PyTorch 1.3 and 1.2 give quite different results. The reason is not entirely clear. 
@@ -117,10 +146,7 @@ As of Mar. 29, 2021, we have used the installation guide on this page to re-setu
 
 Please open an issue if you find any problems in the code, thanks! 
 
-## Acknowledgement
-
-Our code for REDQ-SAC is partly based on the SAC implementation in OpenAI Spinup (https://github.com/openai/spinningup). The current code structure is inspired by the super clean TD3 source code by Scott Fujimoto (https://github.com/sfujim/TD3). 
-
+<a name="setup-ubuntu"/> 
 
 ## Environment setup with newest MuJoCo 2.1, on a Ubuntu 18.04 local machine
 First download MuJoCo files, on a linux machine, we put them under ~/.mujoco:
@@ -168,6 +194,8 @@ python experiments/train_redq_sac.py --debug
 ```
 If you see training logs, then the environment should be setup correctly! 
 
+
+<a name="setup-nyuhpc"/> 
 
 ## Environment setup with newest MuJoCo 2.1, on the NYU Shanghai hpc cluster (system is Linux, hpc management is Slurm)
 This guide helps you set up MuJoCo and then OpenAI Gym, and then REDQ. (You can also follow the guide if you just want OpenAI Gym + MuJoCo and not REDQ, REDQ is only the last step). This likely also works for NYU NY hpc cluster, and might also works for hpc cluster in other schools, assuming your hpc is linux and is using Slurm. 
@@ -293,4 +321,10 @@ Now test redq algorithm:
 cd ~/rl_course/REDQ
 python experiments/train_redq_sac.py --debug
 ```
+
+<a name="acknowledgement"/> 
+
+## Acknowledgement
+
+Our code for REDQ-SAC is partly based on the SAC implementation in OpenAI Spinup (https://github.com/openai/spinningup). The current code structure is inspired by the super clean TD3 source code by Scott Fujimoto (https://github.com/sfujim/TD3). 
 
