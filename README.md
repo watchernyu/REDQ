@@ -220,7 +220,7 @@ Now use Ctrl + D to logout, and then login again.
 
 Now we are again on the hpc login node simply run this to load all required packages:
 ```
-module load anaconda3 cuda/11.3.1 glew/1.13  glfw/3.3 gcc/7.3 mesa/19.0.5 llvm/7.0.1
+module load anaconda3 cuda/11.3.1
 ```
 
 Now download MuJoCo files, on a linux machine, we put them under ~/.mujoco:
@@ -258,7 +258,7 @@ echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/nvidia' >> ~/.bashrc
 
 Now we want the `.bashrc` file to take effect, we need to ctrl+D to logout, and then login again, after we logout and login, we need to reload all the modules , and then also activate the conda env again. (each time you login, the loaded modules and activated environment will be reset, but files on disk will persist) After you login to the hpc again:
 ```
-module load anaconda3 cuda/11.3.1 glew/1.13  glfw/3.3 gcc/7.3 mesa/19.0.5 llvm/7.0.1
+module load anaconda3 cuda/11.3.1
 conda activate redq
 ```
 
@@ -312,7 +312,7 @@ srun -p aquila --pty --mem  5000 -t 0-05:00 bash
 ```
 And now don't forget we are in a new node and need to load modules and activate conda env:
 ```
-module load anaconda3 cuda/11.3.1 glew/1.13  glfw/3.3 gcc/7.3 mesa/19.0.5 llvm/7.0.1
+module load anaconda3 cuda/11.3.1 
 conda deactivate
 conda activate redq 
 ```
