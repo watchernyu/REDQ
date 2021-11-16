@@ -12,7 +12,6 @@ setup(
     install_requires=[
         'numpy',
         'joblib',
-        'mujoco-py>=2.0.2.1',
         'gym>=0.17.2'
     ],
     description="REDQ algorithm PyTorch implementation",
