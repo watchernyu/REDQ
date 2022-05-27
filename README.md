@@ -272,6 +272,8 @@ cd mujoco-py/
 pip install -e . --no-cache
 ```
 
+Somewhere during installation, you might find that some libraries are missing (an error message might show up saying sth is missing, for example `GL/glew.h: No such file or directory #include <GL/glew.h>`), on the HPC, since we are not super user, we cannot install system libraries, but can use `module load` to load them. This command works on some machines: `module load glfw/3.3 gcc/7.3 mesa/19.0.5 llvm/7.0.1`. You can try this and then see if the error goes away. 
+
 Now we want to test whether it works, run `python`, and then in the python interpreter, run `import mujoco_py`. The first time you run it, it will give a ton of log, if you can run it again and get no log, then it should be working. (Summary: try run `import mujoco_py` twice, if the second time you do it, you get no log and no error message, then it should be working). After this testing is complete, quit the python interpreter with either `quit()` or Ctrl + D. 
 
 Note: if you got an error when import `mujoco_py`, sometimes the error will tell you to add some `export` text to a file (typically `~/.bashrc`) on your system, if you see that, then likely this is because you are installing on a system that configured things slightly differently from NYU Shanghai hpc cluster, in that case, just follow the error message to do whatever it tells you, then logout and login, and test it again. Check https://github.com/openai/mujoco-py for more info. 
@@ -323,6 +325,15 @@ python experiments/train_redq_sac.py --debug
 ```
 
 <a name="acknowledgement"/> 
+
+## other HPC issues
+### missing patchelf
+Simply install patchelf. Make sure your conda environment is activated, try this command (make sure you are inside your conda env): `conda install -c anaconda patchelf`.
+
+If you see warnings, or a message telling you to update conda, ignore it, if it asks you whether you want to install, choose yes and wait for the installation to finish.
+
+### quota exceeded
+If you home quota is exceeded, you can contact the current HPC admin to extend your quota. Alternatively, you can install all require packages under `\scratch`, which has plenty of space (but your data under scratch will be removed if you don't use your account for too long). But you might need more python skills to do this correctly. 
 
 ## Acknowledgement
 
