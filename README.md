@@ -131,7 +131,7 @@ On a 2080Ti GPU, running Hopper to 125K will approximately take 10-12 hours. Run
 <a name="implement-redq"/> 
 
 ## Implement REDQ
-If you intend to implement REDQ on your codebase, please refer to the paper and the tutorial (to be released) for guidance. In particular, in Appendix B of the paper, we discussed hyperparameters and some additional implementation details. One important detail is in the beginning of the training, for the first 5000 data points, we sample random action from the action space and do not perform any updates. If you perform a large number of updates with a very small amount of data, it can lead to severe bias accumulation and can negatively affect the performance. 
+If you intend to implement REDQ on your codebase, please refer to the paper and the [video tutorial](#video-tutorial) for guidance. In particular, in Appendix B of the paper, we discussed hyperparameters and some additional implementation details. One important detail is in the beginning of the training, for the first 5000 data points, we sample random action from the action space and do not perform any updates. If you perform a large number of updates with a very small amount of data, it can lead to severe bias accumulation and can negatively affect the performance. 
 
 For REDQ-OFE, as mentioned in the paper, for some reason adding PyTorch batch norm to OFENet will lead to divergence. So in the end we did not use batch norm in our code. 
 
