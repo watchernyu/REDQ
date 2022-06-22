@@ -8,12 +8,13 @@ Author's PyTorch implementation of Randomized Ensembled Double Q-Learning (REDQ)
 - [Code structure explained](#code-structure)  
 - [Implementation video tutorial](#video-tutorial)  
 - [Data and reproducing figures in REDQ](#reproduce-figures)  
-- [Environment setup (old guide)](#setup-old)  
 - [Train an REDQ agent](#train-redq)  
 - [Implement REDQ](#implement-redq)  
 - [Reproduce the results](#reproduce-results)  
+- [Environment setup MuJoCo 2.1, v4 tasks, NYU HPC 18.04](#setup-nyuhpc-new) 
 - [Environment setup MuJoCo 2.1, Ubuntu 18.04](#setup-ubuntu)  
 - [Environment setup MuJoCo 2.1, NYU Shanghai HPC](#setup-nyuhpc)  
+- [Environment setup (old guide, before MuJoCo 2.1)](#setup-old)  
 - [Acknowledgement](#acknowledgement)
 
 
@@ -145,6 +146,34 @@ Other factors such as versions of other packages (for example numpy) or environm
 As of Mar. 29, 2021, we have used the installation guide on this page to re-setup a conda environment and run the code hosted on this repo and the reproduced results are similar to what we have in the paper (though not exactly the same, in some environments, performance are a bit stronger and others a bit weaker). 
 
 Please open an issue if you find any problems in the code, thanks! 
+
+<a name="setup-nyuhpc-new"/> 
+
+## Environment setup with newest MuJoCo and OpenAI Gym V4 tasks, on the NYU Shanghai hpc cluster (system is CentOS Linux release 7.4.1708, hpc management is Slurm)
+This one is the newest guide (2022 Summer) that helps you set up for Gym V4 MuJoCo tasks. And this newer version of Gym MuJoCo tasks is much easier to set up compared to previous versions. If you have limited CS background, when following these steps, make sure you don't perform extra commands in between steps. 
+
+1. to avoid storage space issues, we will work under the scratch partition (change the `netid` to your netid), we first clone the REDQ repo and `cd` into the REDQ folder. 
+```
+cd /scratch/NETID/
+git clone https://github.com/watchernyu/REDQ.git
+cd REDQ
+```
+
+2. download MuJoCo files by running the provided script.
+```
+bash mujoco_download.sh
+```
+
+3. create a conda environment using the yaml file provided. (Again don't forget to change the `netid` part)
+```
+conda env create -f conda_env.yml --prefix /scratch/NETID/redq_env
+conda activate /scratch/NETID/redq_env
+```
+
+4. install redq
+```
+pip install -e .
+```
 
 <a name="setup-ubuntu"/> 
 
