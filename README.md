@@ -177,6 +177,12 @@ conda activate /scratch/NETID/redq_env
 pip install -e .
 ```
 
+5. run a test script, but make sure you filled in your actual netid in `experiments/sample_hpc_script.sh` so that the script can correctly locate your conda environment. 
+```
+cd experiments
+sbatch sample_hpc_script.sh
+```
+
 <a name="setup-ubuntu"/> 
 
 ## Environment setup with newest MuJoCo 2.1, on a Ubuntu 18.04 local machine
