@@ -164,8 +164,9 @@ cd REDQ
 bash mujoco_download.sh
 ```
 
-3. create and activate a conda environment using the yaml file provided. (Again don't forget to change the `netid` part, and the first line is to avoid overly long text on the terminal)
+3. load the anaconda module (since we are on the HPC, we need to use `module load` to get certain software, instead of installing them ourselves), create and activate a conda environment using the yaml file provided. (Again don't forget to change the `netid` part, and the second line is to avoid overly long text on the terminal)
 ```
+module load anaconda3
 conda config --set env_prompt '({name})'
 conda env create -f conda_env.yml --prefix /scratch/NETID/redq_env
 conda activate /scratch/NETID/redq_env
