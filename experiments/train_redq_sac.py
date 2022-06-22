@@ -69,7 +69,7 @@ def redq_sac(env_name, seed=0, epochs='mbpo', steps_per_epoch=1000,
     logger.save_config(locals())
 
     """set up environment and seeding"""
-    env_fn = lambda: gym.make(args.env)
+    env_fn = lambda: gym.make(env_name)
     env, test_env, bias_eval_env = env_fn(), env_fn(), env_fn()
     # seed torch and numpy
     torch.manual_seed(seed)
