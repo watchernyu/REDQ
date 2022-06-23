@@ -17,6 +17,7 @@ Author's PyTorch implementation of Randomized Ensembled Double Q-Learning (REDQ)
 - [Environment setup (old guide, before MuJoCo 2.1)](#setup-old)  
 - [Acknowledgement](#acknowledgement)
 
+June 23, 2022: added guide for setting up with OpenAI MuJoCo v4 tasks on Slurm HPCs (not fully tested yet). Currently it seems this newer version of MuJoCo is much easier to set up compared to previous ones. 
 
 Nov 14, 2021: **MuJoCo** is now free (thanks DeepMind!) and we now have a guide on setting up with MuJoCo 2.1 + OpenAI Gym + REDQ on a linux machine (see end of this page for newest setup guide). 
 
