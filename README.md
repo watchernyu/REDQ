@@ -11,6 +11,7 @@ Author's PyTorch implementation of Randomized Ensembled Double Q-Learning (REDQ)
 - [Train an REDQ agent](#train-redq)  
 - [Implement REDQ](#implement-redq)  
 - [Reproduce the results](#reproduce-results)  
+- [Docker + Singularity setup, mujoco2.2.2](#setup-dockersing) 
 - [Environment setup MuJoCo 2.1, v4 tasks, NYU HPC 18.04](#setup-nyuhpc-new) 
 - [Environment setup MuJoCo 2.1, Ubuntu 18.04](#setup-ubuntu)  
 - [Environment setup MuJoCo 2.1, NYU Shanghai HPC](#setup-nyuhpc)  
@@ -147,6 +148,48 @@ Other factors such as versions of other packages (for example numpy) or environm
 As of Mar. 29, 2021, we have used the installation guide on this page to re-setup a conda environment and run the code hosted on this repo and the reproduced results are similar to what we have in the paper (though not exactly the same, in some environments, performance are a bit stronger and others a bit weaker). 
 
 Please open an issue if you find any problems in the code, thanks! 
+
+<a name="setup-dockersing"/> 
+
+## Environment setup with MuJoCo 2.2.2 and OpenAI Gym V4 tasks, with Docker or Singularity
+This is a new 2023 Guide that is based on Docker and Singularity. (currently under more testing)
+
+Local setup: simply build a docker container with the dockerfile, or modify it to your needs, or pull it from my dockerhub: `docker pull cwatcherw/mujoco:0.7`
+
+Then you can just mount your code repository and do a docker run. 
+
+HPC setup: 
+
+First time setup:
+```
+mkdir /scratch/$USER/.sing_cache
+export SINGULARITY_CACHEDIR=/scratch/$USER/.sing_cache
+echo "export SINGULARITY_CACHEDIR=/scratch/$USER/.sing_cache" >> ~/.bashrc
+mkdir /scratch/$USER/sing
+cd /scratch/$USER/sing 
+git clone https://github.com/watchernyu/REDQ.git
+```
+
+Build singularity and run singularity:
+```
+module load singularity
+cd /scratch/$USER/sing/
+singularity build --sandbox mujoco-sandbox docker://cwatcherw/mujoco:0.7
+singularity exec -B /scratch/$USER/sing/REDQ:/workspace/REDQ -B /scratch/$USER/sing/mujoco-sandbox/opt/conda/lib/python3.8/site-packages/mujoco_py/:/opt/conda/lib/python3.8/site-packages/mujoco_py/ /scratch/$USER/sing/mujoco-sandbox bash
+
+singularity exec -B REDQ/:/workspace/REDQ/ mujoco-sandbox bash
+```
+
+Don't forget to use following command to tell your mujoco to use egl headless rendering if you need to do rendering or use visual input. (this is required when you run on the hpc or other headless machines.)
+```
+export MUJOCO_GL=egl
+```
+
+Sample command to open an interactive session for debugging: 
+```
+srun -p parallel --pty --mem 12000 -t 0-05:00 bash
+```
+
 
 <a name="setup-nyuhpc-new"/> 
 
