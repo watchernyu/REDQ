@@ -154,7 +154,20 @@ Please open an issue if you find any problems in the code, thanks!
 ## Environment setup with MuJoCo 2.2.2 and OpenAI Gym V4 tasks, with Docker or Singularity
 This is a new 2023 Guide that is based on Docker and Singularity. (currently under more testing)
 
-Local setup: simply build a docker container with the dockerfile, or modify it to your needs, or pull it from my dockerhub: `docker pull cwatcherw/mujoco:0.7`
+Local setup: simply build a docker container with the dockerfile provided in this repo (it basically specifies what you need to do to install all dependencies starting with a ubuntu18 system. You can also easily modify it to your needs), or pull it from my dockerhub: `docker pull cwatcherw/mujoco:0.7`
+
+After you pull the docker container, you can quickly test it: 
+```
+docker run -it --rm cwatcherw/mujoco:0.7
+```
+Once you are inside the container, run: 
+
+```
+cd /workspace/REDQ/experiments/
+python train_redq_sac.py
+```
+
+(Alternatively, remove `--rm` flag so the container is kept after shutting down, or add `--gpus all` to use GPU. )
 
 Then you can just mount your code repository and do a docker run. 
 
