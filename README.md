@@ -141,11 +141,11 @@ This is a new 2023 Guide that is based on Docker and Singularity. (currently und
 
 Local setup: simply build a docker container with the dockerfile (either the v2 or the v4 version, depending on your need) provided in this repo (it basically specifies what you need to do to install all dependencies starting with a ubuntu18 system. You can also easily modify it to your needs).
 
-To get things to run very quick (with v2 gym-mujoco environments), simply pull this from my dockerhub: `docker pull cwatcherw/mujoco:0.7`
+To get things to run very quick (with v2 gym-mujoco environments), simply pull this from my dockerhub: `docker pull cwatcherw/gym-mujocov2:1.0`
 
 After you pull the docker container, you can quickly test it: 
 ```
-docker run -it --rm cwatcherw/mujoco:0.7
+docker run -it --rm cwatcherw/gym-mujocov2:1.0
 ```
 Once you are inside the container, run: 
 
@@ -159,9 +159,7 @@ python train_redq_sac.py
 If you want to modify the REDQ codebase to test new ideas, you can clone (a fork of) REDQ repo to a local directory, and then mount it to `/workspace/REDQ`. For example: 
 
 ```
-docker run  -it --rm \ 
---mount type=bind,source=REDQ,target=/workspace/REDQ \
-cwatcherw/mujoco:0.7 
+docker run  -it --rm  --mount type=bind,source=$(pwd)/REDQ,target=/workspace/REDQ  cwatcherw/gym-mujocov2:1.0
 ```
 
 Example setup if you want to run on a Slurm HPC with singularity (you might need to make changes, depending on your HPC settings): 
@@ -180,7 +178,7 @@ Build singularity and run singularity:
 ```
 module load singularity
 cd /scratch/$USER/sing/
-singularity build --sandbox mujoco-sandbox docker://cwatcherw/mujoco:0.7
+singularity build --sandbox mujoco-sandbox docker://cwatcherw/gym-mujocov2:1.0
 singularity exec -B /scratch/$USER/sing/REDQ:/workspace/REDQ -B /scratch/$USER/sing/mujoco-sandbox/opt/conda/lib/python3.8/site-packages/mujoco_py/:/opt/conda/lib/python3.8/site-packages/mujoco_py/ /scratch/$USER/sing/mujoco-sandbox bash
 
 singularity exec -B REDQ/:/workspace/REDQ/ mujoco-sandbox bash
