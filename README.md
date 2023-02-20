@@ -11,30 +11,15 @@ Author's PyTorch implementation of Randomized Ensembled Double Q-Learning (REDQ)
 - [Train an REDQ agent](#train-redq)  
 - [Implement REDQ](#implement-redq)  
 - [Reproduce the results](#reproduce-results)  
-- [Docker + Singularity setup, mujoco2.2.2](#setup-dockersing) 
-- [Environment setup MuJoCo 2.1, v4 tasks, NYU HPC 18.04](#setup-nyuhpc-new) 
-- [Environment setup MuJoCo 2.1, Ubuntu 18.04](#setup-ubuntu)  
-- [Environment setup MuJoCo 2.1, NYU Shanghai HPC](#setup-nyuhpc)  
-- [Environment setup (old guide, before MuJoCo 2.1)](#setup-old)  
+- [Newest Docker + Singularity setup for Gym + MuJoCo v2 and v4](#setup-dockersing) 
+- [(outdated) Environment setup MuJoCo 2.1, v4 tasks, NYU HPC 18.04](#setup-nyuhpc-new) 
+- [(outdated) Environment setup MuJoCo 2.1, Ubuntu 18.04](#setup-ubuntu)  
+- [(outdated) Environment setup MuJoCo 2.1, NYU Shanghai HPC](#setup-nyuhpc)  
+- [(outdated) Environment setup](#setup-old)  
 - [Acknowledgement](#acknowledgement)
+- [Previous updates](#prevupdates)
 
-June 23, 2022: added guide for setting up with OpenAI MuJoCo v4 tasks on Slurm HPCs (not fully tested yet). Currently it seems this newer version of MuJoCo is much easier to set up compared to previous ones. 
-
-Nov 14, 2021: **MuJoCo** is now free (thanks DeepMind!) and we now have a guide on setting up with MuJoCo 2.1 + OpenAI Gym + REDQ on a linux machine (see end of this page for newest setup guide). 
-
-Aug 18, 2021: **VERY IMPORTANT BUG FIX** in `experiments/train_redq_sac.py`, the done signal is not being correctly used, the done signal value should be `False` when the episode terminates due to environment timelimit, but in the earlier version of the code, 
-the agent puts the transition in buffer before this value is corrected. This can affect performance especially for environments where termination due to bad action is rare. This is now fixed and we might do some more testing. If you use this file to run experiments **please check immediately or pull the latest version** of the code. 
-Sorry for the bug! Please don't hesitate to open an issue if you have any questions.
-
-July, 2021: data and the function to reproduce all figures in the paper are now available, see the `Data and reproducing figures in REDQ` section for details.
-
-Mar 23, 2021: We have reorganized the code to make it cleaner and more readable and the first version is now released! 
-
-Mar 29, 2021: We tested the installation process and run the code, and everything seems to be working correctly. We are now working on the implementation video tutorial, which will be released soon. 
-
-May 3, 2021: We uploaded a video tutorial (shared via google drive), please see link below. Hope it helps! 
-
-Code for REDQ-OFE is still being cleaned up and will be released soon (essentially the same code but with additional input from a OFENet). 
+Feb 20, 2023: An updated [docker + singularity setup](#setup-dockersing) is now available. This is probably the easiest set up ever and allows you to use docker to start running your DRL experiments with just 3 commands. We have also released new dockerfiles for gym + mujoco v2 and v4 environments (in the newest version of the repo, you will see 2 folders (`docker-gym-mujocov2`, `docker-gym-mujocov4`) each containing a dockerfile).
 
 <a name="code-structure"/> 
 
@@ -151,10 +136,12 @@ Please open an issue if you find any problems in the code, thanks!
 
 <a name="setup-dockersing"/> 
 
-## Environment setup with MuJoCo 2.2.2 and OpenAI Gym V4 tasks, with Docker or Singularity
+## Environment setup with MuJoCo and OpenAI Gym v2/V4 tasks, with Docker or Singularity
 This is a new 2023 Guide that is based on Docker and Singularity. (currently under more testing)
 
-Local setup: simply build a docker container with the dockerfile provided in this repo (it basically specifies what you need to do to install all dependencies starting with a ubuntu18 system. You can also easily modify it to your needs), or pull it from my dockerhub: `docker pull cwatcherw/mujoco:0.7`
+Local setup: simply build a docker container with the dockerfile (either the v2 or the v4 version, depending on your need) provided in this repo (it basically specifies what you need to do to install all dependencies starting with a ubuntu18 system. You can also easily modify it to your needs).
+
+To get things to run very quick (with v2 gym-mujoco environments), simply pull this from my dockerhub: `docker pull cwatcherw/mujoco:0.7`
 
 After you pull the docker container, you can quickly test it: 
 ```
@@ -169,9 +156,15 @@ python train_redq_sac.py
 
 (Alternatively, remove `--rm` flag so the container is kept after shutting down, or add `--gpus all` to use GPU. )
 
-Then you can just mount your code repository and do a docker run. 
+If you want to modify the REDQ codebase to test new ideas, you can clone (a fork of) REDQ repo to a local directory, and then mount it to `/workspace/REDQ`. For example: 
 
-HPC setup: 
+```
+docker run  -it --rm \ 
+--mount type=bind,source=REDQ,target=/workspace/REDQ \
+cwatcherw/mujoco:0.7 
+```
+
+Example setup if you want to run on a Slurm HPC with singularity (you might need to make changes, depending on your HPC settings): 
 
 First time setup:
 ```
@@ -418,7 +411,6 @@ cd ~/rl_course/REDQ
 python experiments/train_redq_sac.py --debug
 ```
 
-<a name="acknowledgement"/> 
 
 ## other HPC issues
 ### missing patchelf
@@ -428,6 +420,30 @@ If you see warnings, or a message telling you to update conda, ignore it, if it 
 
 ### quota exceeded
 If you home quota is exceeded, you can contact the current HPC admin to extend your quota. Alternatively, you can install all require packages under `\scratch`, which has plenty of space (but your data under scratch will be removed if you don't use your account for too long). But you might need more python skills to do this correctly. 
+
+<a name="prevupdates"/> 
+
+## Previous updates
+
+June 23, 2022: added guide for setting up with OpenAI MuJoCo v4 tasks on Slurm HPCs (not fully tested yet). Currently it seems this newer version of MuJoCo is much easier to set up compared to previous ones. 
+
+Nov 14, 2021: **MuJoCo** is now free (thanks DeepMind!) and we now have a guide on setting up with MuJoCo 2.1 + OpenAI Gym + REDQ on a linux machine (see end of this page for newest setup guide). 
+
+Aug 18, 2021: **VERY IMPORTANT BUG FIX** in `experiments/train_redq_sac.py`, the done signal is not being correctly used, the done signal value should be `False` when the episode terminates due to environment timelimit, but in the earlier version of the code, 
+the agent puts the transition in buffer before this value is corrected. This can affect performance especially for environments where termination due to bad action is rare. This is now fixed and we might do some more testing. If you use this file to run experiments **please check immediately or pull the latest version** of the code. 
+Sorry for the bug! Please don't hesitate to open an issue if you have any questions.
+
+July, 2021: data and the function to reproduce all figures in the paper are now available, see the `Data and reproducing figures in REDQ` section for details.
+
+Mar 23, 2021: We have reorganized the code to make it cleaner and more readable and the first version is now released! 
+
+Mar 29, 2021: We tested the installation process and run the code, and everything seems to be working correctly. We are now working on the implementation video tutorial, which will be released soon. 
+
+May 3, 2021: We uploaded a video tutorial (shared via google drive), please see link below. Hope it helps! 
+
+Code for REDQ-OFE is still being cleaned up and will be released soon (essentially the same code but with additional input from a OFENet). 
+
+<a name="acknowledgement"/> 
 
 ## Acknowledgement
 

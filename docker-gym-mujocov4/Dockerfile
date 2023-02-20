@@ -1,4 +1,5 @@
-# cudagl with miniconda and python 3.8, pytorch, mujoco and gym, redq
+# cudagl with miniconda and python 3.8, pytorch, mujoco and gym v4 envs
+
 FROM nvidia/cudagl:11.0-base-ubuntu18.04
 WORKDIR /workspace
 ENV HOME=/workspace
@@ -63,14 +64,18 @@ RUN pip install --no-cache-dir scikit-learn pandas imageio
 
 # RL env: get mujoco and gym
 RUN pip install --no-cache-dir mujoco==2.2.2 gym==0.26.2
+# change to headless rendering (if you want rendering on a machine's monitor see https://github.com/deepmind/dm_control)
+ENV MUJOCO_GL=egl
+# import mujoco now to avoid long waiting time at runtime
+RUN echo "import mujoco_py" >> /workspace/import_mujoco.py \
+    && python /workspace/import_mujoco.py
 
 # RL algorithm: install REDQ
 RUN cd /workspace/ \
     && git clone https://github.com/watchernyu/REDQ.git \
     && cd REDQ \
-    && git checkout ac840198f143d10bb22425ed2105a49d01b383fa \
+#    && git checkout ac840198f143d10bb22425ed2105a49d01b383fa \
     && pip install -e .
-ENV MUJOCO_GL=egl
 
 CMD [ "/bin/bash" ]
 
