@@ -36,6 +36,7 @@ In `redq/utils` there are some utility classes (such as a logger) and helper fun
 
 In `plot_utils` there are some utility functions to reproduce the figures we presented in the paper. (See the section on "Data and reproducing figures in REDQ")
 
+
 <a name="video-tutorial"/> 
 
 ## Implementation video tutorial
@@ -119,6 +120,8 @@ On a 2080Ti GPU, running Hopper to 125K will approximately take 10-12 hours. Run
 <a name="implement-redq"/> 
 
 ## Implement REDQ
+As discussed in the paper, we obtain REDQ by making minimal changes to a Soft Actor-Critic (SAC) baseline. You can easily modify your SAC code to get REDQ: (a) use an update-to-data (UTD) ratio > 1, (b) have > 2 Q networks, (c) when computing the Q target, randomly select a subset of Q target networks, take their min. 
+
 If you intend to implement REDQ on your codebase, please refer to the paper and the [video tutorial](#video-tutorial) for guidance. In particular, in Appendix B of the paper, we discussed hyperparameters and some additional implementation details. One important detail is in the beginning of the training, for the first 5000 data points, we sample random action from the action space and do not perform any updates. If you perform a large number of updates with a very small amount of data, it can lead to severe bias accumulation and can negatively affect the performance. 
 
 For REDQ-OFE, as mentioned in the paper, for some reason adding PyTorch batch norm to OFENet will lead to divergence. So in the end we did not use batch norm in our code. 
