@@ -42,7 +42,7 @@ In `plot_utils` there are some utility functions to reproduce the figures we pre
 ## Implementation video tutorial
 Here is the link to a video tutorial we created that explains the REDQ implementation in detail: 
 
-[REDQ code explained video tutorial (Google Drive Link)](https://drive.google.com/file/d/1ZUuDK6KUqAGJFaqsM5ITZ_ZyRvThaRn_/view?usp=sharing)
+[REDQ code explained video tutorial (Google Drive Link)](https://drive.google.com/file/d/1QabNOz8VDyKhI0K7tPbIkmx4LKw6N6Te/view?usp=sharing)
 
 <a name="reproduce-figures"/> 
 
