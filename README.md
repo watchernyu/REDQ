@@ -48,7 +48,7 @@ Here is the link to a video tutorial we created that explains the REDQ implement
 
 ## Data and reproducing figures in REDQ
 The data used to produce the figures in the REDQ paper can be downloaded here: 
-[REDQ DATA download link]([https://drive.google.com/file/d/11mjDYCzp3T1MaICGruySrWd-akr-SVJp/view?usp=sharing]) (Google Drive Link, ~80 MB)
+[REDQ DATA download link](https://drive.google.com/file/d/11mjDYCzp3T1MaICGruySrWd-akr-SVJp/view?usp=sharing) (Google Drive Link, ~80 MB)
 
 To reproduce the figures, first download the data, and then extract the zip file to `REDQ/data`. So now a folder called `REDQ_ICLR21` should be at this path:  `REDQ/data/REDQ_ICLR21`. 
 
