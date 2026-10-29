@@ -77,7 +77,6 @@ class REDQSACAgent(object):
         self.gamma = gamma
         self.polyak = polyak
         self.replay_size = replay_size
-        self.alpha = alpha
         self.batch_size = batch_size
         self.num_min = num_min
         self.num_Q = num_Q
